@@ -16,7 +16,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
-    
+
     @Autowired
     private ClienteRepository clienteRepository;
 
@@ -29,23 +29,21 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (usuario == null || usuario.getTipoUsuario() == null) {
             throw new IllegalArgumentException("El usuario y su tipo no pueden ser nulos.");
         }
-        
-        // Guardar el usuario
+
         usuarioRepository.addUsuario(usuario);
-        
-        // Si es un Cliente
-        if ("Cliente".equals(usuario.getTipoUsuario())) {
+
+        //Si es un cliente - 1 (TODO: hay que ver como lo recibimos)
+        if (usuario.getTipoUsuario() == 1) {
             Cliente cliente = new Cliente();
             cliente.setDni(dni);
             cliente.setNombre(nombre);
             cliente.setApellidos(apellidos);
             cliente.setEmail(email);
             cliente.setTelefono(telefono);
-            cliente.setUsuarioCliente(usuario);  // Vinculamos el Usuario con el Cliente
+            cliente.setUsuarioCliente(usuario);
             clienteRepository.addCliente(cliente);
-        } 
-        // Si es un Empresario
-        else if ("Empresario".equals(usuario.getTipoUsuario())) {
+        } //Si es un cliente - 2 (TODO: hay que ver como lo recibimos)
+        else if (usuario.getTipoUsuario() == 2) {
             Empresario empresario = new Empresario();
             empresario.setDni(dni);
             empresario.setNombre(nombre);

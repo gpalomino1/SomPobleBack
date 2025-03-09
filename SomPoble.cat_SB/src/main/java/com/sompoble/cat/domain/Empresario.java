@@ -1,9 +1,11 @@
 package com.sompoble.cat.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+
+
 
 @Entity
 @Table(name = "EMPRESARIO")

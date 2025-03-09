@@ -1,11 +1,11 @@
 package com.sompoble.cat.domain;
 
-import com.sun.istack.NotNull;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity

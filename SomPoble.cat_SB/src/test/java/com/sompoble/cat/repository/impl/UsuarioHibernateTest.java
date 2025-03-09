@@ -1,101 +1,66 @@
 package com.sompoble.cat.repository.impl;
 
 import com.sompoble.cat.domain.Usuario;
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
+import com.sompoble.cat.repository.UsuarioRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
+import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+//@Transactional
 public class UsuarioHibernateTest {
 
-    private SessionFactory sessionFactory;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    private Usuario usuario;
 
     @BeforeEach
-    public void setUp() throws IOException {
-        Properties hibernateProperties = new Properties();
-        try (FileInputStream fis = new FileInputStream("src/main/resources/hibernate.properties")) {
-            hibernateProperties.load(fis);
-        }
-        sessionFactory = new Configuration()
-            .setProperties(hibernateProperties)
-            .addAnnotatedClass(Usuario.class)
-            .buildSessionFactory();
+    public void setUp() {
+        // Configuramos un nuevo usuario para cada prueba
+        usuario = new Usuario();
+        usuario.setTipoUsuario(1);
+        usuario.setNombreUsuario("testUser1");
+        usuario.setContraseña("pass");
     }
 
     @Test
     public void testAddUsuario() {
-        Usuario usuario = new Usuario();
-        usuario.setNombreUsuario("addUser");
-        usuario.setTipoUsuario("Cliente");
-        usuario.setContraseña("pass");
+        usuarioRepository.addUsuario(usuario);
 
-        try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.beginTransaction();
-            session.save(usuario);
-            transaction.commit();
-
-            Usuario retrievedUsuario = session.get(Usuario.class, usuario.getIdUsuario());
-            assertNotNull(retrievedUsuario);
-            assertEquals("addUser", retrievedUsuario.getNombreUsuario());
-        }
+        Usuario retrievedUsuario = usuarioRepository.findByNombreUsuario("testUser");
+        assertNotNull(retrievedUsuario);
+        assertEquals("testUser", retrievedUsuario.getNombreUsuario());
+        assertEquals("pass", retrievedUsuario.getContraseña());
     }
 
     @Test
     public void testUpdateUsuario() {
-        Usuario usuario = new Usuario();
-        usuario.setNombreUsuario("userToUpdate");
-        usuario.setTipoUsuario("updatedCliente");
-        usuario.setContraseña("oldpass");
-
-        try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.beginTransaction();
-            session.save(usuario);
-            transaction.commit();
-        }
+        usuarioRepository.addUsuario(usuario);
 
         usuario.setContraseña("newpass");
+        usuarioRepository.updateUsuario(usuario);
 
-        try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.beginTransaction();
-            session.update(usuario); 
-            transaction.commit();
-        }
-
-        try (Session session = sessionFactory.openSession()) {
-            Usuario updatedUsuario = session.get(Usuario.class, usuario.getIdUsuario());
-            assertNotNull(updatedUsuario);
-            assertEquals("newpass", updatedUsuario.getContraseña());
-        }
+        Usuario retrievedUsuario = usuarioRepository.findByNombreUsuario("testUser");
+        assertNotNull(retrievedUsuario);
+        assertEquals("newpass", retrievedUsuario.getContraseña());
     }
 
     @Test
     public void testFindByNombreUsuario() {
-        // Crear y guardar un usuario
-        Usuario usuario = new Usuario();
-        usuario.setNombreUsuario("findUser");
-        usuario.setTipoUsuario("findCliente");
+        usuario = new Usuario();
+        usuario.setTipoUsuario(1);
+        usuario.setNombreUsuario("testUser2");
         usuario.setContraseña("pass");
+        usuarioRepository.addUsuario(usuario);
 
-        try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.beginTransaction();
-            session.save(usuario);
-            transaction.commit();
-        }
+        Usuario retrievedUsuario = usuarioRepository.findByNombreUsuario("testUser2");
 
-        try (Session session = sessionFactory.openSession()) {
-            Usuario foundUsuario = session.createQuery("FROM Usuario WHERE nombreUsuario = :nombreUsuario", Usuario.class)
-                                          .setParameter("nombreUsuario", "findUser")
-                                          .uniqueResult();
-            assertNotNull(foundUsuario);
-            assertEquals("findUser", foundUsuario.getNombreUsuario());
-        }
+        assertNotNull(retrievedUsuario);
+        assertEquals("testUser2", retrievedUsuario.getNombreUsuario());
     }
 }

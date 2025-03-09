@@ -1,17 +1,17 @@
 package com.sompoble.cat.domain;
 
-import com.sun.istack.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -26,7 +26,8 @@ public class Usuario implements Serializable {
     
     @Column(name = "TIPO_USUARIO", nullable = false)
     @NotNull
-    private String tipoUsuario;
+    //1-Cliente -- 2-Empresario
+    private Integer tipoUsuario;
     
     @Column(name = "NOMBRE_USUARIO", nullable = false, length = 255) 
     @NotNull
@@ -46,15 +47,13 @@ public class Usuario implements Serializable {
     @UpdateTimestamp
     private LocalDateTime fechaModificacion;
     
-    //TODO: es importante revisar esta relacion ya que da error en el test y no veo el porque
-    /*
     @OneToMany(mappedBy = "destinatario")
-    private List<Notificacion> notificaciones;*/
+    private List<Notificacion> notificaciones;
 
     public Usuario() {
     }
 
-    public Usuario (String tipoUsuario, String nombreUsuario, String contraseña) {
+    public Usuario (Integer tipoUsuario, String nombreUsuario, String contraseña) {
         this.nombreUsuario = nombreUsuario;
         this.contraseña = contraseña;
         this.tipoUsuario = tipoUsuario;
@@ -64,11 +63,11 @@ public class Usuario implements Serializable {
         return idUsuario;
     }
 
-    public String getTipoUsuario() {
+    public Integer getTipoUsuario() {
         return tipoUsuario;
     }
 
-    public void setTipoUsuario(String tipoUsuario) {
+    public void setTipoUsuario(Integer tipoUsuario) {
         this.tipoUsuario = tipoUsuario;
     }
 
