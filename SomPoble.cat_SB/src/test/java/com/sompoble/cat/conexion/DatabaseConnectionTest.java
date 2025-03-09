@@ -1,4 +1,4 @@
-package com.sompoble.cat.repository.impl;
+package com.sompoble.cat.conexion;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.sql.Connection;

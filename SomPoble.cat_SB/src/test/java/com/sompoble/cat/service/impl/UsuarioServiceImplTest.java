@@ -1,4 +1,4 @@
-package com.sompoble.cat.repository.impl;
+package com.sompoble.cat.service.impl;
 
 import com.sompoble.cat.domain.Cliente;
 import com.sompoble.cat.domain.Empresario;
