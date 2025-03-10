@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/empresarios")
@@ -16,38 +15,53 @@ public class EmpresarioController {
     @Autowired
     private EmpresarioService empresarioService;
 
+    // Obtener todos los empresarios
     @GetMapping
     public List<Empresario> getAll() {
-        return empresarioService.getAll();
+        return empresarioService.findAll();
     }
 
+    // Consultar por DNI
     @GetMapping("/{dni}")
     public ResponseEntity<Empresario> getByDni(@PathVariable String dni) {
-        Optional<Empresario> empresario = empresarioService.getByDni(dni);
-        return empresario.map(ResponseEntity::ok)
-                          .orElseGet(() -> ResponseEntity.notFound().build());
+        Empresario empresario = empresarioService.findByDNI(dni);
+        return empresario != null ? ResponseEntity.ok(empresario) : ResponseEntity.notFound().build();
     }
 
+    // Crear un nuevo empresario
     @PostMapping
-    public Empresario create(@RequestBody Empresario empresario) {
-        return empresarioService.save(empresario);
+    public ResponseEntity<Void> create(@RequestBody Empresario empresario) {
+        if (empresarioService.existsByDni(empresario.getDni())) {
+            return ResponseEntity.status(409).build();  // Retorna HTTP 409 si ya existe
+        }
+
+        empresarioService.addEmpresario(empresario);
+        return ResponseEntity.created(null).build();  // Creación exitosa con código 201
     }
 
+    // Actualizar un empresario
     @PutMapping("/{dni}")
     public ResponseEntity<Empresario> update(@PathVariable String dni, @RequestBody Empresario empresario) {
-        if (!empresarioService.existsByDni(dni)) {
-            return ResponseEntity.notFound().build();
+        Empresario existingEmpresario = empresarioService.findByDNI(dni);
+
+        if (existingEmpresario == null) {
+            return ResponseEntity.notFound().build();  // Si no existe, retornar 404
         }
-        empresario.setDni(dni);
-        return ResponseEntity.ok(empresarioService.save(empresario));
+
+        existingEmpresario.setNombre(empresario.getNombre());
+        existingEmpresario.setApellidos(empresario.getApellidos());
+
+        empresarioService.updateEmpresario(existingEmpresario);
+        return ResponseEntity.ok(existingEmpresario);  // Devolver el empresario actualizado
     }
 
+    // Eliminar un empresario por DNI
     @DeleteMapping("/{dni}")
     public ResponseEntity<Void> delete(@PathVariable String dni) {
         if (!empresarioService.existsByDni(dni)) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().build();  // Si no existe, retornar 404
         }
         empresarioService.deleteByDni(dni);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();  // Retorna código 204 para eliminación exitosa
     }
 }

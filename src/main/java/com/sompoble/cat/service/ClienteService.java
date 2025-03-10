@@ -2,16 +2,21 @@ package com.sompoble.cat.service;
 
 import com.sompoble.cat.domain.Cliente;
 import java.util.List;
-import java.util.Optional;
 
 public interface ClienteService {
-	List<Cliente> getAll();
+    Cliente findByDni(String dni);
+    
+    void updateCliente(Cliente cliente);
+    
+    void addCliente(Cliente cliente);
 
-	Optional<Cliente> getByDni(String dni);
+    List<Cliente> findAll();
+    
+    boolean existsById(Long id);
 
-	Cliente save(Cliente cliente);
+    void deleteById(Long id);
+    
+    boolean existsByDni(String dni);
 
-	void deleteByDni(String dni);
-
-	boolean existsByDni(String dni);
+    void deleteByDni(String dni);
 }

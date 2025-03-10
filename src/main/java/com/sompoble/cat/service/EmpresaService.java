@@ -2,16 +2,21 @@ package com.sompoble.cat.service;
 
 import com.sompoble.cat.domain.Empresa;
 import java.util.List;
-import java.util.Optional;
 
 public interface EmpresaService {
-	List<Empresa> getAll();
+    Empresa findByCif(String cif);
+    
+    void updateEmpresa(Empresa empresa);
+    
+    void addEmpresario(Empresa empresa);
 
-	Optional<Empresa> getByDni(String dni);
+    List<Empresa> findAll();
+    
+    boolean existsById(Long id);
 
-	Empresa save(Empresa empresa);
+    void deleteById(Long id);
+    
+    boolean existsByCif(String cif);
 
-	void deleteByDni(String dni);
-
-	boolean existsByDni(String dni);
+    void deleteByCif(String cif);
 }

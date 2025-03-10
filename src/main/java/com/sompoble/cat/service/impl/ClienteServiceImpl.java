@@ -6,7 +6,6 @@ import com.sompoble.cat.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ClienteServiceImpl implements ClienteService {
@@ -15,28 +14,42 @@ public class ClienteServiceImpl implements ClienteService {
     private ClienteRepository clienteRepository;
 
     @Override
-    public List<Cliente> getAll() {
+    public Cliente findByDni(String dni) {
+        return clienteRepository.findByDNI(dni);
+    }
+
+    @Override
+    public void updateCliente(Cliente cliente) {
+        clienteRepository.updateCliente(cliente);
+    }
+
+    @Override
+    public void addCliente(Cliente cliente) {
+        clienteRepository.addCliente(cliente);
+    }
+
+    @Override
+    public List<Cliente> findAll() {
         return clienteRepository.findAll();
     }
 
     @Override
-    public Optional<Cliente> getByDni(String dni) {
-        return clienteRepository.findByDni(dni);
+    public boolean existsById(Long id) {
+        return clienteRepository.existsById(id);
     }
 
     @Override
-    public Cliente save(Cliente cliente) {
-        return clienteRepository.save(cliente);
-    }
-
-    @Override
-    public void deleteByDni(String dni) {
-        clienteRepository.deleteByDni(dni);
+    public void deleteById(Long id) {
+        clienteRepository.deleteById(id);
     }
 
     @Override
     public boolean existsByDni(String dni) {
         return clienteRepository.existsByDni(dni);
     }
-}
 
+    @Override
+    public void deleteByDni(String dni) {
+        clienteRepository.deleteByDni(dni);
+    }
+}

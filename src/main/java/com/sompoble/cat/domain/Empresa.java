@@ -6,8 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -26,7 +26,7 @@ public class Empresa implements Serializable {
     @Column(name = "ID_EMPRESA")
     private Long idEmpresa;
     
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name="ID_PERSONA", nullable = false)
     @NotNull
     private Empresario empresario;
@@ -46,10 +46,15 @@ public class Empresa implements Serializable {
     @Size(max = 255)
     private String direccion;
     
-    @Column(name = "HORARIO", nullable = false, length = 255) 
+    @Column(name = "EMAIL", nullable = false, length = 100) 
     @NotNull
-    @Size(max = 255)
-    private String horario;
+    @Size(max = 100)
+    private String email;
+    
+    @Column(name = "TELEFONO", nullable = false, length = 20) 
+    @NotNull
+    @Size(max = 20)
+    private String telefono;
     
     @Column(name = "FECHA_ALTA", updatable = false, nullable = false)
     @CreationTimestamp
@@ -71,12 +76,13 @@ public class Empresa implements Serializable {
     public Empresa() {
     }
 
-    public Empresa(Empresario empresario, String cif, String nombre, String direccion, String horario) {
+    public Empresa(Empresario empresario, String cif, String nombre, String direccion, String email, String telefono) {
         this.empresario = empresario;
         this.cif = cif;
         this.nombre = nombre;
         this.direccion = direccion;
-        this.horario = horario;
+        this.email = email;
+        this.telefono = telefono;
     }
 
     public Long getIdEmpresa() {
@@ -114,13 +120,17 @@ public class Empresa implements Serializable {
     public void setDireccion(String direccion) {
         this.direccion = direccion;
     }
-
-    public String getHorario() {
-        return horario;
+    
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public void setHorario(String horario) {
-        this.horario = horario;
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
     }
 
     public LocalDateTime getFechaAlta() {

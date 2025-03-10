@@ -2,12 +2,14 @@ package com.sompoble.cat.controller;
 
 import com.sompoble.cat.domain.Cliente;
 import com.sompoble.cat.service.ClienteService;
+import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/clientes")
@@ -16,43 +18,94 @@ public class ClienteController {
     @Autowired
     private ClienteService clienteService;
 
+    // Obtener todos los clientes
     @GetMapping
-    public List<Cliente> getAll() {
-        return clienteService.getAll();
+    public ResponseEntity<?> getAll() {
+        List<Cliente> clientes = clienteService.findAll();
+        if (clientes.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", 404);
+            response.put("error", "Not Found");
+            response.put("message", "No se encontraron clientes en la base de datos");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+        return ResponseEntity.ok(clientes);
     }
 
     // Consulta por DNI
     @GetMapping("/{dni}")
-    public ResponseEntity<Cliente> getByDni(@PathVariable String dni) {
-        Optional<Cliente> cliente = clienteService.getByDni(dni);
-        return cliente.map(ResponseEntity::ok)
-                      .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<?> getByDni(@PathVariable String dni) {
+        Cliente cliente = clienteService.findByDni(dni);
+        if (cliente == null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", 404);
+            response.put("error", "Not Found");
+            response.put("message", "Cliente con DNI " + dni + " no encontrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+        return ResponseEntity.ok(cliente);
     }
 
+    // Crear un cliente
     @PostMapping
-    public Cliente create(@RequestBody Cliente cliente) {
-        return clienteService.save(cliente);
+    public ResponseEntity<?> create(@RequestBody Cliente cliente) {
+        if (clienteService.existsByDni(cliente.getDni())) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", 400);
+            response.put("error", "Bad Request");
+            response.put("message", "Cliente con DNI " + cliente.getDni() + " ya existe");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+        clienteService.addCliente(cliente);
+        return ResponseEntity.created(null).build();  // Creación exitosa con código 201
     }
 
-    // Actualización usando DNI
+    // Actualizar un cliente
     @PutMapping("/{dni}")
-    public ResponseEntity<Cliente> update(@PathVariable String dni, @RequestBody Cliente cliente) {
-        if (!clienteService.existsByDni(dni)) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> update(@PathVariable String dni, @RequestBody Cliente cliente) {
+        Cliente existingCliente = clienteService.findByDni(dni);
+
+        if (existingCliente == null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", 404);
+            response.put("error", "Not Found");
+            response.put("message", "No se encontró un cliente con el DNI " + dni);
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
-        // Asegurarse de que el DNI del objeto coincida con el de la URL
-        cliente.setDni(dni);
-        return ResponseEntity.ok(clienteService.save(cliente));
+
+        // Actualización de los datos del cliente
+        existingCliente.setNombre(cliente.getNombre());
+        existingCliente.setApellidos(cliente.getApellidos());
+
+        clienteService.updateCliente(existingCliente);
+
+        // Respuesta de éxito
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", 200);
+        response.put("message", "Cliente actualizado correctamente");
+        response.put("cliente", existingCliente);
+
+        return ResponseEntity.ok(response);
     }
 
-    // Borrado usando DNI
     @DeleteMapping("/{dni}")
-    public ResponseEntity<Void> delete(@PathVariable String dni) {
+    public ResponseEntity<?> delete(@PathVariable String dni) {
         if (!clienteService.existsByDni(dni)) {
-            return ResponseEntity.notFound().build();
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", 404);
+            response.put("error", "Not Found");
+            response.put("message", "No se encontró un cliente con el DNI " + dni);
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
+
         clienteService.deleteByDni(dni);
-        return ResponseEntity.noContent().build();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", 200);
+        response.put("message", "Cliente con DNI " + dni + " eliminado correctamente");
+
+        return ResponseEntity.ok(response);
     }
 }
-

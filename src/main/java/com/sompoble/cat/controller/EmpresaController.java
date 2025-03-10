@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/empresas")
@@ -16,38 +15,53 @@ public class EmpresaController {
     @Autowired
     private EmpresaService empresaService;
 
+    // Obtener todas las empresas
     @GetMapping
     public List<Empresa> getAll() {
-        return empresaService.getAll();
+        return empresaService.findAll();
     }
 
-    @GetMapping("/{dni}")
-    public ResponseEntity<Empresa> getByDni(@PathVariable String dni) {
-        Optional<Empresa> empresa = empresaService.getByDni(dni);
-        return empresa.map(ResponseEntity::ok)
-                      .orElseGet(() -> ResponseEntity.notFound().build());
+    // Consultar por CIF
+    @GetMapping("/{cif}")
+    public ResponseEntity<Empresa> getByCif(@PathVariable String cif) {
+        Empresa empresa = empresaService.findByCif(cif);
+        return empresa != null ? ResponseEntity.ok(empresa) : ResponseEntity.notFound().build();
     }
 
+    // Crear una nueva empresa
     @PostMapping
-    public Empresa create(@RequestBody Empresa empresa) {
-        return empresaService.save(empresa);
+    public ResponseEntity<Void> create(@RequestBody Empresa empresa) {
+        if (empresaService.existsByCif(empresa.getCif())) {
+            return ResponseEntity.status(409).build();  // Retorna HTTP 409 si ya existe
+        }
+
+        empresaService.addEmpresario(empresa);
+        return ResponseEntity.created(null).build();  // Creación exitosa con código 201
     }
 
-    @PutMapping("/{dni}")
-    public ResponseEntity<Empresa> update(@PathVariable String dni, @RequestBody Empresa empresa) {
-        if (!empresaService.existsByDni(dni)) {
-            return ResponseEntity.notFound().build();
+    // Actualizar una empresa
+    @PutMapping("/{cif}")
+    public ResponseEntity<Empresa> update(@PathVariable String cif, @RequestBody Empresa empresa) {
+        Empresa existingEmpresa = empresaService.findByCif(cif);
+
+        if (existingEmpresa == null) {
+            return ResponseEntity.notFound().build();  // Si no existe, retornar 404
         }
-        empresa.setDni(dni);
-        return ResponseEntity.ok(empresaService.save(empresa));
+
+        existingEmpresa.setNombre(empresa.getNombre());
+        existingEmpresa.setDireccion(empresa.getDireccion());
+
+        empresaService.updateEmpresa(existingEmpresa);
+        return ResponseEntity.ok(existingEmpresa);  // Devolver la empresa actualizada
     }
 
-    @DeleteMapping("/{dni}")
-    public ResponseEntity<Void> delete(@PathVariable String dni) {
-        if (!empresaService.existsByDni(dni)) {
-            return ResponseEntity.notFound().build();
+    // Eliminar una empresa por CIF
+    @DeleteMapping("/{cif}")
+    public ResponseEntity<Void> delete(@PathVariable String cif) {
+        if (!empresaService.existsByCif(cif)) {
+            return ResponseEntity.notFound().build();  // Si no existe, retornar 404
         }
-        empresaService.deleteByDni(dni);
-        return ResponseEntity.noContent().build();
+        empresaService.deleteByCif(cif);
+        return ResponseEntity.noContent().build();  // Retorna código 204 para eliminación exitosa
     }
 }

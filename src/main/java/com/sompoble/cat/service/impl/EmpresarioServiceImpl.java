@@ -6,7 +6,6 @@ import com.sompoble.cat.service.EmpresarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class EmpresarioServiceImpl implements EmpresarioService {
@@ -15,28 +14,42 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     private EmpresarioRepository empresarioRepository;
 
     @Override
-    public List<Empresario> getAll() {
+    public Empresario findByDNI(String dni) {
+        return empresarioRepository.findByDNI(dni);
+    }
+
+    @Override
+    public void updateEmpresario(Empresario empresario) {
+        empresarioRepository.updateEmpresario(empresario);
+    }
+
+    @Override
+    public void addEmpresario(Empresario empresario) {
+        empresarioRepository.addEmpresario(empresario);
+    }
+
+    @Override
+    public List<Empresario> findAll() {
         return empresarioRepository.findAll();
     }
 
     @Override
-    public Optional<Empresario> getByDni(String dni) {
-        return empresarioRepository.findByDni(dni);
+    public boolean existsById(Long id) {
+        return empresarioRepository.existsById(id);
     }
 
     @Override
-    public Empresario save(Empresario empresario) {
-        return empresarioRepository.save(empresario);
-    }
-
-    @Override
-    public void deleteByDni(String dni) {
-        empresarioRepository.deleteByDni(dni);
+    public void deleteById(Long id) {
+        empresarioRepository.deleteById(id);
     }
 
     @Override
     public boolean existsByDni(String dni) {
         return empresarioRepository.existsByDni(dni);
     }
-}
 
+    @Override
+    public void deleteByDni(String dni) {
+        empresarioRepository.deleteByDni(dni);
+    }
+}
