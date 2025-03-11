@@ -150,7 +150,7 @@ public class EmpresaControllerTest {
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(updatedEmpresa)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.empresa.nombre").value("Empresa 1 Updated"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$updatedEmpresa.nombre").value("Empresa 1 Updated"));
 
         verify(empresaService, times(1)).updateEmpresa(empresa);
     }

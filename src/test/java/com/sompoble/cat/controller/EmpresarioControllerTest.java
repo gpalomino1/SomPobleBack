@@ -135,6 +135,55 @@ public class EmpresarioControllerTest {
     }
 
     @Test
+    public void testUpdateEmpresario() throws Exception {
+        Empresario empresario = new Empresario();
+        empresario.setDni("12345678A");
+        empresario.setNombre("Juan");
+        empresario.setApellidos("Perez");
+        empresario.setEmail("sergio@sergio.es");
+        empresario.setTelefono("650180800");
+        empresario.setContraseña("pass");
+
+        Empresario updatedEmpresario = new Empresario();
+        updatedEmpresario.setNombre("Juan Updated");
+        updatedEmpresario.setApellidos("Perez Updated");
+        updatedEmpresario.setEmail("juan@sergio.es");
+        updatedEmpresario.setTelefono("916775589");
+        updatedEmpresario.setContraseña("pass1");
+
+        when(empresarioService.findByDNI("12345678A")).thenReturn(empresario);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/empresarios/12345678A")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(updatedEmpresario)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                // Ajusta los jsonPath para que apunten a la estructura correcta
+                .andExpect(MockMvcResultMatchers.jsonPath("$updatedEmpresario.nombre").value("Juan Updated"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$updatedEmpresario.apellidos").value("Perez Updated"));
+
+        verify(empresarioService, times(1)).updateEmpresario(empresario);
+    }
+
+    @Test
+    public void testUpdateClienteNotFound() throws Exception {
+        Empresario updatedEmpresario = new Empresario();
+        updatedEmpresario.setNombre("Juan Updated");
+        updatedEmpresario.setApellidos("Perez Updated");
+        updatedEmpresario.setEmail("sergio@sergio.es");
+        updatedEmpresario.setTelefono("650180800");
+        updatedEmpresario.setContraseña("pass");
+
+        when(empresarioService.findByDNI("12345678A")).thenReturn(null);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/empresarios/12345678A")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(updatedEmpresario)))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+
+        verify(empresarioService, times(1)).findByDNI("12345678A");
+    }
+
+    @Test
     public void testDeleteEmpresario() throws Exception {
         when(empresarioService.existsByDni("12345678A")).thenReturn(true);
 

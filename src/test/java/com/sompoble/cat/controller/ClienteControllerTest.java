@@ -116,25 +116,25 @@ public class ClienteControllerTest {
         verify(clienteService, times(1)).addCliente(cliente);
     }
 
-@Test
-public void testCreateClienteBadRequest() throws Exception {
-    Cliente cliente = new Cliente();
-    cliente.setDni("12345678A");
-    cliente.setNombre("Juan");
-    cliente.setApellidos("Perez");
-    cliente.setEmail("sergio@sergio.es");
-    cliente.setTelefono("650180800");
-    cliente.setContraseña("pass");
+    @Test
+    public void testCreateClienteBadRequest() throws Exception {
+        Cliente cliente = new Cliente();
+        cliente.setDni("12345678A");
+        cliente.setNombre("Juan");
+        cliente.setApellidos("Perez");
+        cliente.setEmail("sergio@sergio.es");
+        cliente.setTelefono("650180800");
+        cliente.setContraseña("pass");
 
-    when(clienteService.existsByDni("12345678A")).thenReturn(true);
+        when(clienteService.existsByDni("12345678A")).thenReturn(true);
 
-    mockMvc.perform(MockMvcRequestBuilders.post("/api/clientes")
-            .contentType("application/json")
-            .content(objectMapper.writeValueAsString(cliente)))
-            .andExpect(MockMvcResultMatchers.status().isBadRequest());  // 400 Bad Request
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/clientes")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(cliente)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());  // 400 Bad Request
 
-    verify(clienteService, times(1)).existsByDni("12345678A");
-}
+        verify(clienteService, times(1)).existsByDni("12345678A");
+    }
 
     @Test
     public void testUpdateCliente() throws Exception {
@@ -159,8 +159,9 @@ public void testCreateClienteBadRequest() throws Exception {
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(updatedCliente)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$cliente.nombre").value("Juan Updated"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$cliente.apellidos").value("Perez Updated"));
+                // Ajusta los jsonPath para que apunten a la estructura correcta
+                .andExpect(MockMvcResultMatchers.jsonPath("$updatedCliente.nombre").value("Juan Updated"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$updatedCliente.apellidos").value("Perez Updated"));
 
         verify(clienteService, times(1)).updateCliente(cliente);
     }
