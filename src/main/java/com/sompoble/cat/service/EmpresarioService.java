@@ -19,4 +19,6 @@ public interface EmpresarioService {
     boolean existsByDni(String dni);
 
     void deleteByDni(String dni);
+    
+    boolean existsByEmail(String email);
 }

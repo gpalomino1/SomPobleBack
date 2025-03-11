@@ -20,4 +20,6 @@ public interface ClienteRepository {
     boolean existsByDni(String dni);
 
     void deleteByDni(String dni);
+    
+    boolean existsByEmail(String email);
 }

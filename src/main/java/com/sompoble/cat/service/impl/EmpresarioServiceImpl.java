@@ -52,4 +52,9 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     public void deleteByDni(String dni) {
         empresarioRepository.deleteByDni(dni);
     }
+    
+    @Override
+    public boolean existsByEmail(String email) {
+        return empresarioRepository.existsByEmail(email);
+    }
 }

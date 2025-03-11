@@ -190,4 +190,25 @@ class ClienteServiceImplTest {
             assertTrue(true);
         }
     }
+
+    @Test
+    void existsByEmailTest() {
+        // Crear un cliente
+        Cliente cliente = new Cliente();
+        cliente.setDni("12345678A");
+        cliente.setNombre("Juan");
+        cliente.setApellidos("Perez Garcia");
+        cliente.setEmail("sergio@sergio.es");
+        cliente.setTelefono("650180800");
+        cliente.setContraseña("pass");
+        clienteService.addCliente(cliente);
+
+        // Verificar si el cliente existe por email
+        boolean result = clienteService.existsByEmail("sergio@sergio.es");
+        assertTrue(result);
+
+        // Verificar que un email no existente no existe
+        boolean resultFalse = clienteService.existsByEmail("noexistent@domain.com");
+        assertFalse(resultFalse);
+    }
 }

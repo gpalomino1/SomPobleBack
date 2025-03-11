@@ -52,4 +52,9 @@ public class ClienteServiceImpl implements ClienteService {
     public void deleteByDni(String dni) {
         clienteRepository.deleteByDni(dni);
     }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return clienteRepository.existsByEmail(email);
+    }
 }

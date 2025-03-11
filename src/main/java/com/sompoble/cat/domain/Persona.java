@@ -62,7 +62,9 @@ public class Persona implements Serializable {
     @Column(name = "FECHA_MODIFICACION", nullable = false)
     @UpdateTimestamp
     private LocalDateTime fechaModificacion;
-
+    
+    private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    
     public Persona() {
     }
 
@@ -72,7 +74,7 @@ public class Persona implements Serializable {
         this.apellidos = apellidos;
         this.email = email;
         this.telefono = telefono;
-        this.contraseña = contraseña;
+        this.contraseña = encoder.encode(contraseña);
     }
     
     public Long getIdPersona() {
@@ -124,7 +126,6 @@ public class Persona implements Serializable {
     }
 
     public void setContraseña(String contraseña) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         this.contraseña = encoder.encode(contraseña);
     }
     

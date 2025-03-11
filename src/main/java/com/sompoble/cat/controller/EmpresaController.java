@@ -3,10 +3,13 @@ package com.sompoble.cat.controller;
 import com.sompoble.cat.domain.Empresa;
 import com.sompoble.cat.service.EmpresaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/empresas")
@@ -17,51 +20,92 @@ public class EmpresaController {
 
     // Obtener todas las empresas
     @GetMapping
-    public List<Empresa> getAll() {
-        return empresaService.findAll();
+    public ResponseEntity<?> getAll() {
+        List<Empresa> empresas = empresaService.findAll();
+        if (empresas.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", 404);
+            response.put("error", "Not Found");
+            response.put("message", "No se encontraron empresas en la base de datos");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+        return ResponseEntity.ok(empresas);
     }
 
     // Consultar por CIF
     @GetMapping("/{cif}")
-    public ResponseEntity<Empresa> getByCif(@PathVariable String cif) {
+    public ResponseEntity<?> getByCif(@PathVariable String cif) {
         Empresa empresa = empresaService.findByCif(cif);
-        return empresa != null ? ResponseEntity.ok(empresa) : ResponseEntity.notFound().build();
+        if (empresa == null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", 404);
+            response.put("error", "Not Found");
+            response.put("message", "Empresa con CIF " + cif + " no encontrada");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+        return ResponseEntity.ok(empresa);
     }
 
     // Crear una nueva empresa
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody Empresa empresa) {
+    public ResponseEntity<?> create(@RequestBody Empresa empresa) {
         if (empresaService.existsByCif(empresa.getCif())) {
-            return ResponseEntity.status(409).build();  // Retorna HTTP 409 si ya existe
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", 400);
+            response.put("error", "Bad Request");
+            response.put("message", "Empresa con CIF " + empresa.getCif() + " ya existe");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
         empresaService.addEmpresario(empresa);
-        return ResponseEntity.created(null).build();  // Creación exitosa con código 201
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     // Actualizar una empresa
     @PutMapping("/{cif}")
-    public ResponseEntity<Empresa> update(@PathVariable String cif, @RequestBody Empresa empresa) {
+    public ResponseEntity<?> update(@PathVariable String cif, @RequestBody Empresa empresa) {
         Empresa existingEmpresa = empresaService.findByCif(cif);
 
         if (existingEmpresa == null) {
-            return ResponseEntity.notFound().build();  // Si no existe, retornar 404
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", 404);
+            response.put("error", "Not Found");
+            response.put("message", "No se encontró una empresa con el CIF " + cif);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
+        // Actualización de datos
         existingEmpresa.setNombre(empresa.getNombre());
         existingEmpresa.setDireccion(empresa.getDireccion());
+        existingEmpresa.setEmail(empresa.getEmail());
+        existingEmpresa.setTelefono(empresa.getTelefono());
 
         empresaService.updateEmpresa(existingEmpresa);
-        return ResponseEntity.ok(existingEmpresa);  // Devolver la empresa actualizada
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", 200);
+        response.put("message", "Empresa actualizada correctamente");
+        response.put("empresa", existingEmpresa);
+
+        return ResponseEntity.ok(response);
     }
 
     // Eliminar una empresa por CIF
     @DeleteMapping("/{cif}")
-    public ResponseEntity<Void> delete(@PathVariable String cif) {
+    public ResponseEntity<?> delete(@PathVariable String cif) {
         if (!empresaService.existsByCif(cif)) {
-            return ResponseEntity.notFound().build();  // Si no existe, retornar 404
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", 404);
+            response.put("error", "Not Found");
+            response.put("message", "No se encontró una empresa con el CIF " + cif);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
+
         empresaService.deleteByCif(cif);
-        return ResponseEntity.noContent().build();  // Retorna código 204 para eliminación exitosa
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", 200);
+        response.put("message", "Empresa con CIF " + cif + " eliminada correctamente");
+        return ResponseEntity.ok(response);
     }
 }

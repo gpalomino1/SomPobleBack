@@ -121,6 +121,10 @@ public class Empresa implements Serializable {
         this.direccion = direccion;
     }
     
+    public String getEmail() {
+        return email;
+    }
+    
     public void setEmail(String email) {
         this.email = email;
     }

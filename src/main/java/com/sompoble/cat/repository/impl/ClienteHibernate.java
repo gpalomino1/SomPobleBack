@@ -46,7 +46,7 @@ public class ClienteHibernate implements ClienteRepository {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Cliente> cq = cb.createQuery(Cliente.class);
         Root<Cliente> root = cq.from(Cliente.class);
-        
+
         return entityManager.createQuery(cq).getResultList();
     }
 
@@ -87,6 +87,19 @@ public class ClienteHibernate implements ClienteRepository {
 
         Predicate idPredicate = cb.equal(root.get("id"), id);
         cq.select(cb.count(root)).where(idPredicate);
+
+        Long count = entityManager.createQuery(cq).getSingleResult();
+        return count > 0;
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<Cliente> root = cq.from(Cliente.class);
+
+        Predicate emailPredicate = cb.equal(root.get("email"), email);
+        cq.select(cb.count(root)).where(emailPredicate);
 
         Long count = entityManager.createQuery(cq).getSingleResult();
         return count > 0;

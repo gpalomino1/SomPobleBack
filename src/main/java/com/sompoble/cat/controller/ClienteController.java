@@ -29,7 +29,7 @@ public class ClienteController {
             response.put("message", "No se encontraron clientes en la base de datos");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
-        return ResponseEntity.ok(clientes);
+        return ResponseEntity.ok(clientes); //Devuelve 200
     }
 
     // Consulta por DNI
@@ -43,7 +43,7 @@ public class ClienteController {
             response.put("message", "Cliente con DNI " + dni + " no encontrado");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
-        return ResponseEntity.ok(cliente);
+        return ResponseEntity.ok(cliente); //Devuelve 200
     }
 
     // Crear un cliente
@@ -55,9 +55,16 @@ public class ClienteController {
             response.put("error", "Bad Request");
             response.put("message", "Cliente con DNI " + cliente.getDni() + " ya existe");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }else if (clienteService.existsByEmail(cliente.getEmail())){
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", 400);
+            response.put("error", "Bad Request");
+            response.put("message", "Email" + cliente.getEmail()+ " ya existe");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
+        
         clienteService.addCliente(cliente);
-        return ResponseEntity.created(null).build();  // Creación exitosa con código 201
+        return ResponseEntity.created(null).build();  //Creación exitosa con código 201
     }
 
     // Actualizar un cliente
@@ -77,6 +84,8 @@ public class ClienteController {
         // Actualización de los datos del cliente
         existingCliente.setNombre(cliente.getNombre());
         existingCliente.setApellidos(cliente.getApellidos());
+        existingCliente.setNombre(cliente.getTelefono());
+        existingCliente.setApellidos(cliente.getContraseña());
 
         clienteService.updateCliente(existingCliente);
 
@@ -86,7 +95,7 @@ public class ClienteController {
         response.put("message", "Cliente actualizado correctamente");
         response.put("cliente", existingCliente);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(response); //Devuelve 200
     }
 
     @DeleteMapping("/{dni}")
@@ -106,6 +115,6 @@ public class ClienteController {
         response.put("status", 200);
         response.put("message", "Cliente con DNI " + dni + " eliminado correctamente");
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(response); //Devuelve 200
     }
 }

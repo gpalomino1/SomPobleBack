@@ -190,4 +190,21 @@ class EmpresarioServiceImplTest {
             assertTrue(true);
         }
     }
+
+    @Test
+    void existsByEmailTest() {
+        // Crear un empresario
+        Empresario empresario = new Empresario();
+        empresario.setDni("12345678A");
+        empresario.setNombre("Carlos");
+        empresario.setApellidos("Sanchez Martinez");
+        empresario.setEmail("carlos@empresa.com");
+        empresario.setTelefono("650123456");
+        empresario.setContraseña("pass");
+        empresarioService.addEmpresario(empresario);
+
+        // Verificar si el empresario existe por email
+        boolean result = empresarioService.existsByEmail("carlos@empresa.com");
+        assertTrue(result);
+    }
 }

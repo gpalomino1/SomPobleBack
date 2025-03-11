@@ -178,4 +178,25 @@ class EmpresarioHibernateTest {
         Empresario empresarioEliminado = entityManager.find(Empresario.class, empresario.getIdPersona());
         assertNull(empresarioEliminado);
     }
+
+    @Test
+    void existsByEmailTest() {
+        // Crear un empresario
+        Empresario empresario = new Empresario();
+        empresario.setDni("12345678A");
+        empresario.setNombre("Carlos");
+        empresario.setApellidos("Lopez Martinez");
+        empresario.setEmail("carlos@empresa.com");
+        empresario.setTelefono("650180800");
+        empresario.setContraseña("pass");
+        empresarioHibernate.addEmpresario(empresario);
+
+        // Verificar si el cliente existe por email
+        boolean result = empresarioHibernate.existsByEmail("carlos@empresa.com");
+        assertTrue(result);
+
+        // Verificar que un email no registrado no existe
+        boolean resultNoExist = empresarioHibernate.existsByEmail("noexistente@sergio.es");
+        assertFalse(resultNoExist);
+    }
 }
