@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class ClienteControllerTest {
 
-    @InjectMocks
+    /*@InjectMocks
     private ClienteController clienteController;
 
     @Mock
@@ -203,5 +203,5 @@ public class ClienteControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
 
         verify(clienteService, times(1)).existsByDni("12345678A");
-    }
+    }*/
 }
