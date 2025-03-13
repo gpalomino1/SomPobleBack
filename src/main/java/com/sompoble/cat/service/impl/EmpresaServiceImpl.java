@@ -1,60 +1,55 @@
 package com.sompoble.cat.service.impl;
 
-import com.sompoble.cat.domain.Empresario;
-import com.sompoble.cat.repository.EmpresarioRepository;
-import com.sompoble.cat.service.EmpresarioService;
+import com.sompoble.cat.domain.Empresa;
+import com.sompoble.cat.repository.EmpresaRepository;
+import com.sompoble.cat.service.EmpresaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class EmpresaServiceImpl implements EmpresarioService {
+public class EmpresaServiceImpl implements EmpresaService {
 
-    @Autowired
-    private EmpresarioRepository empresarioRepository;
+     @Autowired
+    private EmpresaRepository empresaRepository;
 
     @Override
-    public List<Empresario> getAll() {
-        return empresarioRepository.findAll();
+    public Empresa findByCif(String cif) {
+        return empresaRepository.findByCif(cif);
     }
 
     @Override
-    public Optional<Empresario> getByDni(String dni) {
-        return empresarioRepository.findByDni(dni);
+    public void updateEmpresa(Empresa empresa) {
+        empresaRepository.updateEmpresa(empresa);
     }
 
     @Override
-    public Empresario save(Empresario empresario) {
-        return empresarioRepository.save(empresario);
+    public void addEmpresario(Empresa empresa) {
+        empresaRepository.addEmpresario(empresa);
     }
 
     @Override
-    public void deleteByDni(String dni) {
-        empresarioRepository.deleteByDni(dni);
+    public List<Empresa> findAll() {
+        return empresaRepository.findAll();
     }
 
     @Override
-    public boolean existsByDni(String dni) {
-        return empresarioRepository.existsByDni(dni);
+    public boolean existsById(Long id) {
+        return empresaRepository.existsById(id);
     }
 
-	@Override
-	public Optional<Empresario> getById(Long id) {
-		// TODO Auto-generated method stub
-		return Optional.empty();
-	}
+    @Override
+    public void deleteById(Long id) {
+        empresaRepository.deleteById(id);
+    }
 
-	@Override
-	public void delete(Long id) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public boolean existsByCif(String cif) {
+        return empresaRepository.existsByCif(cif);
+    }
 
-	@Override
-	public boolean existsById(Long id) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public void deleteByCif(String cif) {
+        empresaRepository.deleteByCif(cif);
+    }
 }
-

@@ -14,13 +14,14 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Entity
 @Inheritance (strategy=InheritanceType.TABLE_PER_CLASS)
 public class Persona implements Serializable {
     
     @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE)
+    @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "ID_PERSONA")
     private Long idPersona;
     
@@ -49,6 +50,11 @@ public class Persona implements Serializable {
     @Size(max = 20)
     private String telefono;   
     
+    @Column(name = "CONTRASEÑA", nullable = false, length = 255) 
+    @NotNull
+    @Size(max = 255)
+    private String contraseña;
+    
     @Column(name = "FECHA_ALTA", updatable = false, nullable = false)
     @CreationTimestamp
     private LocalDateTime fechaAlta;
@@ -56,23 +62,26 @@ public class Persona implements Serializable {
     @Column(name = "FECHA_MODIFICACION", nullable = false)
     @UpdateTimestamp
     private LocalDateTime fechaModificacion;
-
+    
+    private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    
     public Persona() {
     }
 
-    public Persona(String dni, String nombre, String apellidos, String email, String telefono) {
+    public Persona(String dni, String nombre, String apellidos, String email, String telefono, String contraseña) {
         this.dni = dni;
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.email = email;
         this.telefono = telefono;
+        this.contraseña = encoder.encode(contraseña);
     }
     
     public Long getIdPersona() {
         return idPersona;
     }
     
-    public String getNif() {
+    public String getDni() {
         return dni;
     }
 
@@ -110,6 +119,14 @@ public class Persona implements Serializable {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+    
+    public String getContraseña() {
+        return contraseña;
+    }
+
+    public void setContraseña(String contraseña) {
+        this.contraseña = encoder.encode(contraseña);
     }
     
     public LocalDateTime getFechaAlta() {

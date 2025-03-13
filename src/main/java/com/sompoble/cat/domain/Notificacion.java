@@ -24,9 +24,12 @@ public class Notificacion implements Serializable {
     private Long idNotificacion;
     
     @ManyToOne
-    @JoinColumn(name = "ID_USUARIO", nullable = false)
-    @NotNull
-    private Usuario destinatario;
+    @JoinColumn(name = "ID_CLIENTE", nullable = true)
+    private Cliente cliente;
+
+    @ManyToOne
+    @JoinColumn(name = "ID_EMPRESARIO", nullable = true)
+    private Empresario empresario;
 
     @Column(name = "MENSAJE", nullable = false)
     @NotNull
@@ -34,7 +37,7 @@ public class Notificacion implements Serializable {
     
     @Column(name = "TIPO", nullable = false, length = 50) 
     @NotNull
-    @Size(max = 100)
+    @Size(max = 50)
     private String tipo;
     
     @Column(name = "FECHA_ALTA", updatable = false, nullable = false)
@@ -45,8 +48,9 @@ public class Notificacion implements Serializable {
     public Notificacion() {
     }
     
-    public Notificacion(Usuario destinatario, String mensaje, String tipo){
-        this.destinatario = destinatario;
+    public Notificacion(Cliente cliente, Empresario empresario, String mensaje, String tipo){
+        this.cliente = cliente;
+        this.empresario = empresario;
         this.mensaje = mensaje;
         this.tipo = tipo;
     }
@@ -55,12 +59,20 @@ public class Notificacion implements Serializable {
         return idNotificacion;
     }
 
-    public Usuario getDestinatario() {
-        return destinatario;
+    public Cliente getCliente() {
+        return cliente;
     }
 
-    public void setDestinatario(Usuario destinatario) {
-        this.destinatario = destinatario;
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public Empresario getEmpresario() {
+        return empresario;
+    }
+
+    public void setEmpresario(Empresario empresario) {
+        this.empresario = empresario;
     }
 
     public String getMensaje() {
