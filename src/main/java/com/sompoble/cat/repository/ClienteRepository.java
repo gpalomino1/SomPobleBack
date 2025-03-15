@@ -1,10 +1,13 @@
 package com.sompoble.cat.repository;
-
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.sompoble.cat.domain.Cliente;
 import java.util.List;
 
-import com.sompoble.cat.domain.Cliente;
 
-public interface ClienteRepository {
+
+public interface ClienteRepository extends JpaRepository<Cliente, Long> {
+    Cliente findByEmail(String email);
+    
     Cliente findByDNI(String dni);
     
     void updateCliente(Cliente cliente);
@@ -22,4 +25,6 @@ public interface ClienteRepository {
     void deleteByDni(String dni);
     
     boolean existsByEmail(String email);
+  
+    
 }

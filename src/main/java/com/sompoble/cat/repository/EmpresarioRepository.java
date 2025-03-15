@@ -1,10 +1,12 @@
 package com.sompoble.cat.repository;
-
-import java.util.List;
-
 import com.sompoble.cat.domain.Empresario;
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface EmpresarioRepository {
+
+public interface EmpresarioRepository extends JpaRepository<Empresario, Long> {
+    Empresario findByEmail(String email);
+    
     Empresario findByDNI(String dni);
     
     void updateEmpresario (Empresario empresario);
