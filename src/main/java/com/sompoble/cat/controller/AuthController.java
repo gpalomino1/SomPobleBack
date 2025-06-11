@@ -1,6 +1,5 @@
 package com.sompoble.cat.controller;
 
-
 import com.sompoble.cat.domain.Cliente;
 import com.sompoble.cat.domain.Empresario;
 import com.sompoble.cat.service.ClienteService;
@@ -8,6 +7,7 @@ import com.sompoble.cat.service.EmpresarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -22,6 +22,9 @@ public class AuthController {
 
     @Autowired
     private EmpresarioService empresarioService;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
@@ -38,10 +41,10 @@ public class AuthController {
         }
 
         Map<String, Object> response = new HashMap<>();
-        
+
         if (tipoUsuario == 1) { // Cliente
             Cliente cliente = clienteService.findByEmail(email);
-            if (cliente != null && cliente.getContraseña().equals(contraseña)) {
+            if (cliente != null && passwordEncoder.matches(contraseña, cliente.getContraseña())) {
                 response.put("status", 200);
                 response.put("message", "Inicio de sesión exitoso");
                 response.put("usuario", cliente);
@@ -49,7 +52,7 @@ public class AuthController {
             }
         } else if (tipoUsuario == 2) { // Empresario
             Empresario empresario = empresarioService.findByEmail(email);
-            if (empresario != null && empresario.getContraseña().equals(contraseña)) {
+            if (empresario != null && passwordEncoder.matches(contraseña, empresario.getContraseña())) {
                 response.put("status", 200);
                 response.put("message", "Inicio de sesión exitoso");
                 response.put("usuario", empresario);
